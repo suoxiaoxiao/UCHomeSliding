@@ -15,6 +15,10 @@
 
 @property (nonatomic ,copy)void(^touchIndex)(NSInteger index);
 
+
+
+- (UIImage *)updateCaptureImage;
+
 - (instancetype)initWithFrame:(CGRect)frame WithData:(NSArray *)array;
 
 

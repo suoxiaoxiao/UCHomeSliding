@@ -13,15 +13,21 @@
 #import <Foundation/NSUnit.h>
 
 NSInteger const bottomLineHeight = 10;
+NSInteger const buttonTagGap = 10000;
 
-NSString *const CategoryCollectionViewCellID = @"CategoryCollectionViewCellID";
+//NSString *const CategoryCollectionViewCellID = @"CategoryCollectionViewCellID";
 
-@interface CategorySliderView ()
-<UICollectionViewDelegate,UICollectionViewDataSource>
+@interface CategorySliderView ()<UIScrollViewDelegate>
+//<UICollectionViewDelegate,UICollectionViewDataSource>
 
 
-@property (nonatomic ,strong)UICollectionViewFlowLayout *layout;
-@property (nonatomic ,strong)UICollectionView *collectionView;
+//@property (nonatomic ,strong)UICollectionViewFlowLayout *layout;
+//
+//@property (nonatomic ,strong)UICollectionView *collectionView;
+
+@property (nonatomic ,strong)UIScrollView *bgScrollView;
+@property (nonatomic , assign)CGFloat blockWidth;
+
 @property (nonatomic ,strong)NSMutableArray *dataArray;
 
 @property (nonatomic ,strong)UIImageView *bottomLine;
@@ -52,7 +58,7 @@ NSString *const CategoryCollectionViewCellID = @"CategoryCollectionViewCellID";
         self.backgroundColor = [UIColor clearColor];
         
         self.dataArray = [array mutableCopy];
-        
+        _blockWidth = frame.size.width/4.0;
         [self setUp];
     }
     return self;
@@ -62,18 +68,45 @@ NSString *const CategoryCollectionViewCellID = @"CategoryCollectionViewCellID";
 {
     self.dataArray = data;
     
-    [self setNeedsLayout];
-    [self layoutIfNeeded];
+    for (UIView *sub in self.bgScrollView.subviews) {
+        if (sub == self.bottomLine) {
+            continue;
+        }
+        
+        [sub removeFromSuperview];
+    }
+    
+    for (int i = 0; i < data.count; i++) {
+        
+        UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
+        
+        btn.tag = i + buttonTagGap;
+        
+        btn.frame = CGRectMake(i * _blockWidth, 0, _blockWidth, self.frame.size.height);
+        
+        [btn setTitle:self.dataArray[i] forState:0];
+        
+        [btn setTitleColor:[UIColor whiteColor] forState:0];
+        
+        btn.titleLabel.textAlignment = NSTextAlignmentCenter;
+        
+        [btn addTarget:self action:@selector(handleCategoryClickAction:) forControlEvents:UIControlEventTouchUpInside];
+        
+        [self.bgScrollView addSubview:btn];
+        
+    }
+    self.bgScrollView.contentSize = CGSizeMake(data.count * _blockWidth, 0);
+    
+     //获取当前scrollView的屏幕显示视图
+   self.captureImage = [self updateCaptureImage];
+    
 }
 
 - (void)updateCellTitleColorImage:(UIImage *)image
 {
-    
     for (CALayer *sub in self.loadTitleColorView.layer.sublayers) {
         [sub removeFromSuperlayer];
     }
-    
-    
     
     CALayer *tempLayer;
     if (tempLayer) {
@@ -104,29 +137,32 @@ NSString *const CategoryCollectionViewCellID = @"CategoryCollectionViewCellID";
     [self.loadTitleColorView.layer addSublayer:tempLayer];
 }
 
+- (UIImage *)updateCaptureImage
+{
+    //获取当前scrollView的屏幕显示视图 使用的屏幕缩放因子是当前分辨率 尺寸为当前collectionView的大小
+    UIImage *image = nil;
+    CGRect frame = self.frame;
+    CGRect tempF = self.bgScrollView.frame;
+    tempF.size = CGSizeMake(self.bgScrollView.contentSize.width, 50);
+    self.bgScrollView.frame = tempF;
+    self.frame = tempF;
+    image = [self captureScrollView:self.bgScrollView];
+    //这里将会影响重新布局
+    self.frame = frame;
+    return image;
+}
 
 - (void)setUp
 {
-    UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
-    layout.itemSize = CGSizeMake(0,0);
-    layout.minimumLineSpacing = 0;
-    layout.minimumInteritemSpacing = 0;
-    layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-    self.layout = layout;
-    _collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0,0,0,0) collectionViewLayout:layout];
-    _collectionView.dataSource = self;
-    _collectionView.delegate = self;
-    [self addSubview:_collectionView];
-    _collectionView.showsHorizontalScrollIndicator = NO;
-    _collectionView.backgroundColor = [UIColor clearColor];
-    [_collectionView registerClass:[CategoryCollectionViewCell class] forCellWithReuseIdentifier:CategoryCollectionViewCellID];
-    [_collectionView setBounces:NO];
-    
+    self.bgScrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
+    self.bgScrollView.delegate = self;
+    self.bgScrollView.bounces = NO;
+    [self addSubview:self.bgScrollView];
     
     self.bottomLine = [[UIImageView alloc] init];
     self.bottomLine.backgroundColor = [UIColor greenColor];
-    [self.bottomLine setContentMode:UIViewContentModeScaleAspectFit];
-    [_collectionView addSubview:self.bottomLine];
+    [self.bottomLine setContentMode:UIViewContentModeScaleToFill];
+    [self.bgScrollView addSubview:self.bottomLine];
     
     self.loadTitleColorView = [[UIView alloc] init];
     [self addSubview:self.loadTitleColorView];
@@ -135,22 +171,21 @@ NSString *const CategoryCollectionViewCellID = @"CategoryCollectionViewCellID";
     
 }
 
+
 - (UIImage *)captureScrollView:(UIScrollView *)scrollView{
     UIImage* image = nil;
-    UIGraphicsBeginImageContextWithOptions(scrollView.contentSize, NO, 0);
-//    UIGraphicsBeginImageContext(scrollView.contentSize);
+    
+    //这边设置的size 是截取当前layer的大小
+    UIGraphicsBeginImageContextWithOptions(scrollView.frame.size,NO,0);
     {
         [scrollView.layer renderInContext: UIGraphicsGetCurrentContext()];
         image = UIGraphicsGetImageFromCurrentImageContext();
     }
     UIGraphicsEndImageContext();
     
-    
-    if (image != nil)
-    {
+    if (image != nil) {
         return image;
     }
-    
     return nil;
 }
 
@@ -158,9 +193,6 @@ NSString *const CategoryCollectionViewCellID = @"CategoryCollectionViewCellID";
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
     if ([keyPath isEqualToString:@"contentOffset"]) {
-        
-        //获取当前collectionView的屏幕显示视图 使用的屏幕缩放因子是当前分辨率 尺寸为当前collectionView的大小
-        self.captureImage = [self captureScrollView:self.collectionView];
         
         //外界的偏移量
         CGPoint waijieContentOffset = [change[NSKeyValueChangeNewKey] CGPointValue];
@@ -180,7 +212,7 @@ NSString *const CategoryCollectionViewCellID = @"CategoryCollectionViewCellID";
          */
         
         //自己cell的宽度为定值
-        CGFloat smallCellW = self.layout.itemSize.width;
+        CGFloat smallCellW = _blockWidth;
         
         //外界cell的宽度
 //        self.dependOnViewCellWidth;
@@ -202,12 +234,12 @@ NSString *const CategoryCollectionViewCellID = @"CategoryCollectionViewCellID";
         
         if (smallContentOffset <= (self.dataArray.count - 2) * smallCellW && smallContentOffset >= smallCellW * (afterRow)) {
             
-            self.collectionView.contentOffset = CGPointMake(smallContentOffset -  smallCellW * afterRow, 0);
+            self.bgScrollView.contentOffset = CGPointMake(smallContentOffset -  smallCellW * afterRow, 0);
             
         }else{
             
             //获取当前的移动距离
-            CGFloat currentOffset = self.collectionView.contentOffset.x;
+            CGFloat currentOffset = self.bgScrollView.contentOffset.x;
             
             if (currentOffset + self.frame.size.width >= smallCellW * (self.dataArray.count - 1)) {//当前屏幕显示最后一个是倒数第二个
                 //当前是第几个
@@ -215,7 +247,7 @@ NSString *const CategoryCollectionViewCellID = @"CategoryCollectionViewCellID";
                 
                 if (index == self.dataArray.count - 2) {//当前选中的是倒数第二个
                     
-                    self.collectionView.contentOffset = CGPointMake((self.dataArray.count - cellRow) * smallCellW, 0);
+                    self.bgScrollView.contentOffset = CGPointMake((self.dataArray.count - cellRow) * smallCellW, 0);
                 }
                 
             }else if(fabs(currentOffset - smallCellW) < smallCellW){//当偏移量小于等于2个宽度的时候
@@ -224,7 +256,7 @@ NSString *const CategoryCollectionViewCellID = @"CategoryCollectionViewCellID";
                 
                 if (index == 1) {//当前选中的是倒数第二个
                     
-                    self.collectionView.contentOffset = CGPointMake(0, 0);
+                    self.bgScrollView.contentOffset = CGPointMake(0, 0);
                     
                 }
                 
@@ -240,18 +272,16 @@ NSString *const CategoryCollectionViewCellID = @"CategoryCollectionViewCellID";
             bottomF.origin.x = smallContentOffset;
             self.bottomLine.frame = bottomF;
             
-//            CGPoint loadCenter = [self.bottomLine convertRect:self.bottomLine.bounds toView:self.window];
             CGRect loadO = [self.bottomLine convertRect:self.bottomLine.bounds toView:self.bottomLine.window];
             CGRect loadF = self.loadTitleColorView.frame;
             loadF.origin.x = loadO.origin.x;
             self.loadTitleColorView.frame = loadF;
-//            return;
         }
         
         //截图当前滑动块占据的位置的image
         UIImage *titleImage;
         titleImage = [self getImageFromImage:self.captureImage myImageRect:CGRectMake(self.bottomLine.frame.origin.x, 0, self.bottomLine.frame.size.width, self.frame.size.height - bottomLineHeight)];
-        
+//
         [self updateCellTitleColorImage:titleImage];
         
     }
@@ -281,49 +311,71 @@ NSString *const CategoryCollectionViewCellID = @"CategoryCollectionViewCellID";
     
     CGImageRef subImageRef =CGImageCreateWithImageInRect(imageRef, myImageRect);
     
-    UIGraphicsBeginImageContextWithOptions(size,NO,0);
-    
+    UIGraphicsBeginImageContext(size);
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     CGContextDrawImage(context, myImageRect, subImageRef);
     
     UIImage* smallImage = [UIImage imageWithCGImage:subImageRef];
-    
+
+    CGImageRelease(subImageRef);
     UIGraphicsEndImageContext();
     
     return smallImage;
     
 }
 
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    return self.dataArray.count;
-}
+//- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
+//    return self.dataArray.count;
+//}
+//
+//- ( UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
+//    
+//    CategoryCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:CategoryCollectionViewCellID forIndexPath:indexPath];
+//    
+//    cell.title = self.dataArray[indexPath.row];
+//    
+//    
+//    
+//    return cell;
+//}
+//
+//
+//- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
+//{
+//    return 1;
+//}
+//
+//- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    
+//    //将bottomLine 移动到这
+//    //将loadceng移动到这
+//    // 滑动条
+//    CGRect bottomF = self.bottomLine.frame;
+//    bottomF.origin.x = self.layout.itemSize.width * indexPath.row;
+//    self.bottomLine.frame = bottomF;
+//    
+//    // 遮盖层
+//    CGRect loadO = [self.bottomLine convertRect:self.bottomLine.bounds toView:self.bottomLine.window];
+//    CGRect loadF = self.loadTitleColorView.frame;
+//    loadF.origin.x = loadO.origin.x;
+//    self.loadTitleColorView.frame = loadF;
+//    
+//    self.isClickCelllTriggerAction = YES;
+//    
+//    if (self.touchIndex) {
+//        self.touchIndex(indexPath.row);
+//    }
+//}
 
-- ( UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
-    
-    CategoryCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:CategoryCollectionViewCellID forIndexPath:indexPath];
-    
-    cell.title = self.dataArray[indexPath.row];
-    
-    
-    
-    return cell;
-}
-
-
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
+- (void)handleCategoryClickAction:(UIButton *)sender
 {
-    return 1;
-}
-
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    
     //将bottomLine 移动到这
     //将loadceng移动到这
     // 滑动条
     CGRect bottomF = self.bottomLine.frame;
-    bottomF.origin.x = self.layout.itemSize.width * indexPath.row;
+    bottomF.origin.x = _blockWidth * (sender.tag - buttonTagGap);
     self.bottomLine.frame = bottomF;
     
     // 遮盖层
@@ -335,19 +387,24 @@ NSString *const CategoryCollectionViewCellID = @"CategoryCollectionViewCellID";
     self.isClickCelllTriggerAction = YES;
     
     if (self.touchIndex) {
-        self.touchIndex(indexPath.row);
+        self.touchIndex(sender.tag - buttonTagGap);
     }
 }
 
 - (void)layoutSubviews
 {
     [super layoutSubviews];
+    NSLog(@"layoutSubviews======");
+    self.bgScrollView.frame = self.bounds;
+    self.bottomLine.frame = CGRectMake(0, self.frame.size.height - bottomLineHeight, _blockWidth, bottomLineHeight);
     
-    self.collectionView.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
-    self.layout.itemSize = CGSizeMake(self.frame.size.width/4,self.frame.size.height);
-    self.bottomLine.frame = CGRectMake(0, self.frame.size.height - bottomLineHeight, self.layout.itemSize.width, bottomLineHeight);
+    self.loadTitleColorView.frame = CGRectMake(0, 0, _blockWidth, self.frame.size.height - bottomLineHeight);
     
-    self.loadTitleColorView.frame = CGRectMake(0, 0, self.layout.itemSize.width, self.frame.size.height - bottomLineHeight);
+    UIImage *titleImage;
+    titleImage = [self getImageFromImage:self.captureImage myImageRect:CGRectMake(self.bottomLine.frame.origin.x, 0, self.bottomLine.frame.size.width, self.frame.size.height - bottomLineHeight)];
+    
+    [self updateCellTitleColorImage:titleImage];
+    
 }
 
 - (void)dealloc

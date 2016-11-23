@@ -9,7 +9,8 @@
 #import "ViewController.h"
 #import "CustomCollectionViewCell.h"
 #import "CategorySliderView.h"
-
+#define WIDTH [UIScreen mainScreen].bounds.size.width
+#define HEIGHT [UIScreen mainScreen].bounds.size.height
 
 NSString *const HomeCollectionTableViewCellID = @"HomeCollectionTableViewCellID";
 
@@ -28,6 +29,9 @@ NSString *const HomeCollectionTableViewCellID = @"HomeCollectionTableViewCellID"
 @property (nonatomic ,strong)CategorySliderView *sliderView;
 
 @property (nonatomic , assign)BOOL isCanAniamtion;
+
+
+//@property (nonatomic ,strong)UIImageView *testimage;
 
 @end
 
@@ -71,7 +75,6 @@ NSString *const HomeCollectionTableViewCellID = @"HomeCollectionTableViewCellID"
     }
     
     [self.sliderView updateData:[temp mutableCopy]];
-
 }
 
 - (void)createUI
@@ -90,26 +93,45 @@ NSString *const HomeCollectionTableViewCellID = @"HomeCollectionTableViewCellID"
     [self.view addSubview:_collectionView];
     [_collectionView registerClass:[CustomCollectionViewCell class] forCellWithReuseIdentifier:HomeCollectionTableViewCellID];
     
-    self.sliderView = [[CategorySliderView alloc] initWithFrame:CGRectMake(0, 64, self.view.frame.size.width, 50) WithData:@[]];
     
+    
+    self.sliderView = [[CategorySliderView alloc] initWithFrame:CGRectMake(0, 64, self.view.frame.size.width, 50) WithData:@[]];
     self.sliderView.dependOnViewCellWidth = layout.itemSize.width;
     [self.view addSubview:self.sliderView];
     
+    
     __weak typeof(self)weakSelf = self;
+    
+    
     self.sliderView.touchIndex = ^(NSInteger index){
         
         weakSelf.isCanAniamtion = NO;
         
         [weakSelf.collectionView setContentOffset:CGPointMake(index * layout.itemSize.width, 0) animated:NO];
         
-        CustomCollectionViewCell *cell = (CustomCollectionViewCell *)[weakSelf.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
+//        CustomCollectionViewCell *cell = (CustomCollectionViewCell *)[weakSelf.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
+//        
+//        [cell resumeContentOffset];
+//        
+//
+        [weakSelf.collectionView reloadData];
         
-        [cell resumeContentOffset];
-        
-        weakSelf.isCanAniamtion = YES;
+        [weakSelf performSelector:@selector(resetAnimation) withObject:nil afterDelay:0.1];
     };
     
     [self.collectionView addObserver:self.sliderView forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
+    
+//    self.testimage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 180, WIDTH, 50)];
+//    self.testimage.backgroundColor = [UIColor cyanColor];
+//    [self.view addSubview:self.testimage];
+    
+    
+    
+}
+
+- (void)resetAnimation
+{
+    self.isCanAniamtion = YES;
 }
 
 
@@ -163,6 +185,13 @@ NSString *const HomeCollectionTableViewCellID = @"HomeCollectionTableViewCellID"
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
     self.startMovePoint = scrollView.contentOffset;
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    
+    NSLog(@"%s",__func__);
+    // Dispose of any resources that can be recreated.
 }
 
 @end
