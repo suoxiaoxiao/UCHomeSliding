@@ -31,8 +31,6 @@ NSString *const HomeCollectionTableViewCellID = @"HomeCollectionTableViewCellID"
 @property (nonatomic , assign)BOOL isCanAniamtion;
 
 
-//@property (nonatomic ,strong)UIImageView *testimage;
-
 @end
 
 @implementation ViewController
@@ -109,23 +107,13 @@ NSString *const HomeCollectionTableViewCellID = @"HomeCollectionTableViewCellID"
         
         [weakSelf.collectionView setContentOffset:CGPointMake(index * layout.itemSize.width, 0) animated:NO];
         
-//        CustomCollectionViewCell *cell = (CustomCollectionViewCell *)[weakSelf.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
-//        
-//        [cell resumeContentOffset];
-//        
-//
         [weakSelf.collectionView reloadData];
         
         [weakSelf performSelector:@selector(resetAnimation) withObject:nil afterDelay:0.1];
     };
     
     [self.collectionView addObserver:self.sliderView forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
-    
-//    self.testimage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 180, WIDTH, 50)];
-//    self.testimage.backgroundColor = [UIColor cyanColor];
-//    [self.view addSubview:self.testimage];
-    
-    
+
     
 }
 
@@ -191,7 +179,6 @@ NSString *const HomeCollectionTableViewCellID = @"HomeCollectionTableViewCellID"
     [super didReceiveMemoryWarning];
     
     NSLog(@"%s",__func__);
-    // Dispose of any resources that can be recreated.
 }
 
 @end

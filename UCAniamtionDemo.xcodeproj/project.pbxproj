@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		A870F5661DE2947500AA459B /* CategorySliderView.m in Sources */ = {isa = PBXBuildFile; fileRef = A870F5651DE2947500AA459B /* CategorySliderView.m */; };
-		A870F5691DE2963000AA459B /* CategoryCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A870F5681DE2963000AA459B /* CategoryCollectionViewCell.m */; };
 		A8B652981DDE8CEA00C0BA59 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A8B652971DDE8CEA00C0BA59 /* main.m */; };
 		A8B6529B1DDE8CEA00C0BA59 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A8B6529A1DDE8CEA00C0BA59 /* AppDelegate.m */; };
 		A8B6529E1DDE8CEA00C0BA59 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A8B6529D1DDE8CEA00C0BA59 /* ViewController.m */; };
@@ -39,8 +38,6 @@
 /* Begin PBXFileReference section */
 		A870F5641DE2947500AA459B /* CategorySliderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CategorySliderView.h; sourceTree = "<group>"; };
 		A870F5651DE2947500AA459B /* CategorySliderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CategorySliderView.m; sourceTree = "<group>"; };
-		A870F5671DE2963000AA459B /* CategoryCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CategoryCollectionViewCell.h; sourceTree = "<group>"; };
-		A870F5681DE2963000AA459B /* CategoryCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CategoryCollectionViewCell.m; sourceTree = "<group>"; };
 		A8B652931DDE8CEA00C0BA59 /* UCAniamtionDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UCAniamtionDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8B652971DDE8CEA00C0BA59 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A8B652991DDE8CEA00C0BA59 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -119,8 +116,6 @@
 				A8F6207A1DDEE9C000EF5ECE /* CustomCollectionViewCell.m */,
 				A870F5641DE2947500AA459B /* CategorySliderView.h */,
 				A870F5651DE2947500AA459B /* CategorySliderView.m */,
-				A870F5671DE2963000AA459B /* CategoryCollectionViewCell.h */,
-				A870F5681DE2963000AA459B /* CategoryCollectionViewCell.m */,
 				A8B6529F1DDE8CEA00C0BA59 /* Main.storyboard */,
 				A8B652A21DDE8CEA00C0BA59 /* Assets.xcassets */,
 				A8B652A41DDE8CEA00C0BA59 /* LaunchScreen.storyboard */,
@@ -257,7 +252,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A870F5691DE2963000AA459B /* CategoryCollectionViewCell.m in Sources */,
 				A8B6529E1DDE8CEA00C0BA59 /* ViewController.m in Sources */,
 				A870F5661DE2947500AA459B /* CategorySliderView.m in Sources */,
 				A8B6529B1DDE8CEA00C0BA59 /* AppDelegate.m in Sources */,

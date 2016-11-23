@@ -9,21 +9,12 @@
 
 
 #import "CategorySliderView.h"
-#import "CategoryCollectionViewCell.h"
 #import <Foundation/NSUnit.h>
 
 NSInteger const bottomLineHeight = 10;
 NSInteger const buttonTagGap = 10000;
 
-//NSString *const CategoryCollectionViewCellID = @"CategoryCollectionViewCellID";
-
 @interface CategorySliderView ()<UIScrollViewDelegate>
-//<UICollectionViewDelegate,UICollectionViewDataSource>
-
-
-//@property (nonatomic ,strong)UICollectionViewFlowLayout *layout;
-//
-//@property (nonatomic ,strong)UICollectionView *collectionView;
 
 @property (nonatomic ,strong)UIScrollView *bgScrollView;
 @property (nonatomic , assign)CGFloat blockWidth;
@@ -324,50 +315,6 @@ NSInteger const buttonTagGap = 10000;
     return smallImage;
     
 }
-
-//- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-//    return self.dataArray.count;
-//}
-//
-//- ( UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
-//    
-//    CategoryCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:CategoryCollectionViewCellID forIndexPath:indexPath];
-//    
-//    cell.title = self.dataArray[indexPath.row];
-//    
-//    
-//    
-//    return cell;
-//}
-//
-//
-//- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
-//{
-//    return 1;
-//}
-//
-//- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
-//{
-//    
-//    //将bottomLine 移动到这
-//    //将loadceng移动到这
-//    // 滑动条
-//    CGRect bottomF = self.bottomLine.frame;
-//    bottomF.origin.x = self.layout.itemSize.width * indexPath.row;
-//    self.bottomLine.frame = bottomF;
-//    
-//    // 遮盖层
-//    CGRect loadO = [self.bottomLine convertRect:self.bottomLine.bounds toView:self.bottomLine.window];
-//    CGRect loadF = self.loadTitleColorView.frame;
-//    loadF.origin.x = loadO.origin.x;
-//    self.loadTitleColorView.frame = loadF;
-//    
-//    self.isClickCelllTriggerAction = YES;
-//    
-//    if (self.touchIndex) {
-//        self.touchIndex(indexPath.row);
-//    }
-//}
 
 - (void)handleCategoryClickAction:(UIButton *)sender
 {
