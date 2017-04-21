@@ -6,6 +6,10 @@
 //  Copyright © 2016年 SXiao.RR. All rights reserved.
 //
 
+#pragma mark - 测试跳转
+#import "DemoViewController.h"
+
+
 #import "ViewController.h"
 #import "CustomCollectionViewCell.h"
 #import "CategorySliderView.h"
@@ -140,6 +144,18 @@ NSString *const HomeCollectionTableViewCellID = @"HomeCollectionTableViewCellID"
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
     return 1;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    DemoViewController *VC= [DemoViewController new];
+    
+    [self.navigationController pushViewController:VC animated:YES];
+}
+
+- (void)dealloc{
+    
+    [self.collectionView removeObserver:self.sliderView forKeyPath:@"contentOffset"];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
