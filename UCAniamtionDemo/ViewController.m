@@ -47,6 +47,13 @@ NSString *const HomeCollectionTableViewCellID = @"HomeCollectionTableViewCellID"
     return _dataArray;
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    [self.collectionView addObserver:self.sliderView forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -116,9 +123,6 @@ NSString *const HomeCollectionTableViewCellID = @"HomeCollectionTableViewCellID"
         [weakSelf performSelector:@selector(resetAnimation) withObject:nil afterDelay:0.1];
     };
     
-    [self.collectionView addObserver:self.sliderView forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
-
-    
 }
 
 - (void)resetAnimation
@@ -148,6 +152,8 @@ NSString *const HomeCollectionTableViewCellID = @"HomeCollectionTableViewCellID"
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    [self.collectionView removeObserver:self.sliderView forKeyPath:@"contentOffset"];
+    
     DemoViewController *VC= [DemoViewController new];
     
     [self.navigationController pushViewController:VC animated:YES];
